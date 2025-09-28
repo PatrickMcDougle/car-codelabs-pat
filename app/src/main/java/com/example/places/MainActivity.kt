@@ -34,7 +34,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -47,6 +47,9 @@ import com.example.places.data.PlacesRepository
 import com.example.places.data.model.Place
 import com.example.places.data.model.toIntent
 import com.example.places.ui.theme.PlacesTheme
+import androidx.car.app.connection.CarConnection
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,14 +57,21 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            val carConnectionType by CarConnection(this).type.observeAsState(initial = -1)
             PlacesTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding->
-                    Column(
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Column {
                         Text(
-                            text = "Places",
+                            text = "Car Connection Type",
                             style = MaterialTheme.typography.displayLarge,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        ProjectionState(
+                            carConnectionType = carConnectionType,
                             modifier = Modifier.padding(8.dp)
                         )
                         PlaceList(places = PlacesRepository().getPlaces())
@@ -116,4 +126,20 @@ fun PlaceList(places: List<Place>) {
             }
         }
     }
+}
+
+@Composable
+fun ProjectionState(carConnectionType: Int, modifier: Modifier = Modifier) {
+    val text = when (carConnectionType) {
+        CarConnection.CONNECTION_TYPE_NOT_CONNECTED -> "Not projecting"
+        CarConnection.CONNECTION_TYPE_NATIVE -> "Running on Android Automotive OS"
+        CarConnection.CONNECTION_TYPE_PROJECTION -> "Projecting"
+        else -> "Unknown connection type"
+    }
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = modifier
+    )
 }

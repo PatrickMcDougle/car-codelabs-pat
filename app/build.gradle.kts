@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.material3)
     implementation(project(":common:data"))
+    implementation(project(":common:car-app-service"))
+    implementation(libs.androidx.car.app)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
