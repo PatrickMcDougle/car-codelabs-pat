@@ -3,6 +3,9 @@
 *.ap_
 *.aab
 
+# ignore backup files
+*.bak
+
 # Files for the ART/Dalvik VM
 *.dex
 
